@@ -32,11 +32,11 @@ if(isset($_REQUEST['id'])){
 		$id=$id[0];
 	}else{
 		$fallback=true;
-		$id=0;
+		$id=1;
 	}
 }else{
 	$fallback=true;
-	$id=0;
+	$id=1;
 }
 $stmt=$db->prepare('SELECT SUM(count) FROM ' . PREFIX . 'visitors WHERE id=? AND time>=? AND time<?;');
 $stmt2=$db->prepare('SELECT SUM(unique_count) FROM ' . PREFIX . 'visitors WHERE id=? AND time>=? AND time<?;');
