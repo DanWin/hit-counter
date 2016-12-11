@@ -43,13 +43,13 @@ header('Expires: 0');
 header('Content-Type: image/gif');
 
 //add visitor to db
-$stmt=$db->prepare('INSERT INTO ' . PREFIX . 'visitors (id, time, count) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE count=count+1;');
-$stmt->execute([$id[0], $update_time]);
-if(!isSet($_COOKIE["counted$_REQUEST[id]"])){
-	$stmt=$db->prepare('UPDATE ' . PREFIX . 'visitors SET unique_count=unique_count+1 WHERE id=? AND time=?;');
-	$stmt->execute([$id[0], $update_time]);
+if(isSet($_COOKIE["counted$_REQUEST[id]"])){
+	$stmt=$db->prepare('INSERT INTO ' . PREFIX . 'visitors (id, time, count, unique_count) VALUES (?, ?, 1, 1) ON DUPLICATE KEY UPDATE count=count+1;');
+}else{
 	setcookie("counted$_REQUEST[id]", 1, $time+3600);
+	$stmt=$db->prepare('INSERT INTO ' . PREFIX . 'visitors (id, time, count, unique_count) VALUES (?, ?, 1, 1) ON DUPLICATE KEY UPDATE count=count+1, unique_count=unique_count+1;');
 }
+$stmt->execute([$id[0], $update_time]);
 
 //get number of visitors
 if(!isSet($_REQUEST['unique']) || $_REQUEST['unique']==0){
