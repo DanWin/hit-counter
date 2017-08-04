@@ -34,6 +34,7 @@ const DBVERSION=1; // Database layout version
 $L=[
 	'de' => 'Deutsch',
 	'en' => 'English',
+	'ja' => '日本語',
 ];
 if(isSet($_REQUEST['lang']) && isSet($L[$_REQUEST['lang']])){
 	$language=$_REQUEST['lang'];
