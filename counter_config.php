@@ -31,6 +31,8 @@ const VERSION='1.0'; // Script version
 const DBVERSION=1; // Database layout version
 
 // Language selection
+$I = $T = [];
+$language=LANG;
 $L=[
 	'de' => 'Deutsch',
 	'en' => 'English',
@@ -39,17 +41,14 @@ $L=[
 if(isSet($_REQUEST['lang']) && isSet($L[$_REQUEST['lang']])){
 	$language=$_REQUEST['lang'];
 	if(!isSet($_COOKIE['language']) || $_COOKIE['language']!==$language){
-		setcookie('language', $language);
+		set_secure_cookie('language', $language);
 	}
 }elseif(isSet($_COOKIE['language']) && isSet($L[$_COOKIE['language']])){
 	$language=$_COOKIE['language'];
-}else{
-	$language=LANG;
 }
-include_once('counter_lang_en.php'); //always include English
+require_once('counter_lang_en.php'); //always include English
 if($language!=='en'){
-	$T=[];
-	include_once("counter_lang_$language.php"); //replace with translation if available
+	require_once("counter_lang_$language.php"); //replace with translation if available
 	foreach($T as $name=>$translation){
 		$I[$name]=$translation;
 	}
@@ -58,15 +57,55 @@ if($language!=='en'){
 function print_langs(){
 	global $I, $L;
 	echo "<small>$I[language]: ";
-	$query=preg_replace('/(&?lang=[a-z_\-]*)/i', '', $_SERVER['QUERY_STRING']);
+	$query=ltrim(preg_replace('/&?lang=[a-z_\-]*/i', '', $_SERVER['QUERY_STRING']), '&');
 	foreach($L as $code=>$name){
 		if($query===''){
 			$uri="?lang=$code";
 		}else{
 			$uri='?'.htmlspecialchars($query)."&amp;lang=$code";
 		}
-		echo " <a href=\"$uri\">$name</a>";
+		echo " <a href=\"$uri\" hreflang=\"$code\">$name</a>";
 	}
 	echo '</small>';
 }
-?>
+
+function send_headers(array $styles = []){
+	header('Content-Type: text/html; charset=UTF-8');
+	header('Pragma: no-cache');
+	header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0, private');
+	header('Expires: 0');
+	header('Referrer-Policy: no-referrer');
+	header("Permissions-Policy: accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; battery 'none'; camera 'none'; cross-origin-isolated 'none'; display-capture 'none'; document-domain 'none'; encrypted-media 'none'; geolocation 'none'; fullscreen 'none'; execution-while-not-rendered 'none'; execution-while-out-of-viewport 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; navigation-override 'none'; payment 'none'; picture-in-picture 'none'; publickey-credentials-get 'none'; screen-wake-lock 'none'; sync-xhr 'none'; usb 'none'; web-share 'none'; xr-spatial-tracking 'none'; clipboard-read 'none'; clipboard-write 'none'; gamepad 'none'; speaker-selection 'none'; conversion-measurement 'none'; focus-without-user-activation 'none'; hid 'none'; idle-detection 'none'; sync-script 'none'; vertical-scroll 'none'; serial 'none'; trust-token-redemption 'none';");
+	$style_hashes = '';
+	foreach($styles as $style) {
+		$style_hashes .= " 'sha256-".base64_encode(hash('sha256', $style, true))."'";
+	}
+	header("Content-Security-Policy: base-uri 'self'; default-src 'none'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; style-src $style_hashes");
+	header('X-Content-Type-Options: nosniff');
+	header('X-Frame-Options: sameorigin');
+	header('X-XSS-Protection: 1; mode=block');
+	if($_SERVER['REQUEST_METHOD'] === 'HEAD'){
+		exit; // headers sent, no further processing needed
+	}
+}
+
+function set_secure_cookie(string $name, string $value){
+	if (version_compare(PHP_VERSION, '7.3.0') >= 0) {
+		setcookie($name, $value, ['expires' => 0, 'path' => '/', 'domain' => '', 'secure' => is_definitely_ssl(), 'httponly' => true, 'samesite' => 'Strict']);
+	}else{
+		setcookie($name, $value, 0, '/', '', is_definitely_ssl(), true);
+	}
+}
+
+function is_definitely_ssl() : bool {
+	if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+		return true;
+	}
+	if (isset($_SERVER['SERVER_PORT']) && ('443' == $_SERVER['SERVER_PORT'])) {
+		return true;
+	}
+	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && ('https' === $_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+		return true;
+	}
+	return false;
+}

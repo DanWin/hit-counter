@@ -57,4 +57,3 @@ $I=[
 	'statusok' => 'Status: OK',
 	'nodb' => 'No database connection!',
 ];
-?>

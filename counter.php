@@ -19,7 +19,8 @@
 */
 
 //prepare
-include_once('counter_config.php');
+require_once('counter_config.php');
+send_headers();
 $time=time();
 $update_time=$time-($time%3600);
 try{
@@ -37,16 +38,15 @@ if(!$id=$stmt->fetch(PDO::FETCH_NUM)){
 }
 
 //headers
-header('Pragma: no-cache');
-header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
-header('Expires: 0');
+header_remove('X-Frame-Options');
+header("Content-Security-Policy: base-uri 'self'; default-src 'none'; frame-ancestors '*'");
 header('Content-Type: image/gif');
 
 //add visitor to db
 if(isSet($_COOKIE["counted$_REQUEST[id]"])){
 	$stmt=$db->prepare('INSERT INTO ' . PREFIX . 'visitors (id, time, count, unique_count) VALUES (?, ?, 1, 1) ON DUPLICATE KEY UPDATE count=count+1;');
 }else{
-	setcookie("counted$_REQUEST[id]", 1, $time+3600);
+	set_secure_cookie("counted$_REQUEST[id]", 1);
 	$stmt=$db->prepare('INSERT INTO ' . PREFIX . 'visitors (id, time, count, unique_count) VALUES (?, ?, 1, 1) ON DUPLICATE KEY UPDATE count=count+1, unique_count=unique_count+1;');
 }
 $stmt->execute([$id[0], $update_time]);
@@ -95,4 +95,3 @@ if(isset($_REQUEST['tr']) && $_REQUEST['tr']==1){
 imagestring($im, 5, 5, 5, $num[0], $fg);
 imagegif($im);
 imagedestroy($im);
-?>

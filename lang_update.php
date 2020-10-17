@@ -28,7 +28,7 @@ echo "<?php
 \$T=[
 ";
 if(file_exists("counter_lang_$code.php")){
-	include("counter_lang_$code.php");
+	require_once("counter_lang_$code.php");
 }
 include('counter_lang_en.php');
 foreach($T as $id=>$value){
@@ -39,7 +39,6 @@ foreach($T as $id=>$value){
 foreach($I as $id=>$value){
 	echo "\t'$id' => '".str_replace("'", "\'", $value)."',\n";
 }
-echo "];\n?>\n";
+echo "];\n";
 $file=ob_get_clean();
 file_put_contents("counter_lang_$code.php", $file);
-?>

@@ -18,7 +18,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-include_once('counter_config.php');
+require_once('counter_config.php');
 try{
 	$db=new PDO('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS, [PDO::ATTR_ERRMODE=>PDO::ERRMODE_WARNING, PDO::ATTR_PERSISTENT=>PERSISTENT]);
 }catch(PDOException $e){
@@ -29,7 +29,7 @@ if(isset($_REQUEST['id'])){
 	$stmt=$db->prepare('SELECT * FROM ' . PREFIX . 'registered WHERE api_key=?;');
 	$stmt->execute([$_REQUEST['id']]);
 	if($id=$stmt->fetch(PDO::FETCH_NUM)){
-		$id=$id[0];
+		$id=(int) $id[0];
 	}else{
 		$fallback=true;
 		$id=1;
@@ -40,19 +40,23 @@ if(isset($_REQUEST['id'])){
 }
 $stmt=$db->prepare('SELECT SUM(count) FROM ' . PREFIX . 'visitors WHERE id=? AND time>=? AND time<?;');
 $stmt2=$db->prepare('SELECT SUM(unique_count) FROM ' . PREFIX . 'visitors WHERE id=? AND time>=? AND time<?;');
-header('Content-Type: text/html; charset=UTF-8');
-echo '<!DOCTYPE html><html><head>';
-echo "<title>$I[titlestat]</title>";
-echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-echo '<meta name=viewport content="width=device-width, initial-scale=1">';
-echo '</head><body>';
-echo "<h2>$I[titlestat]</h2>";
+$style = '.red{color:red} .software-link{text-align:center;font-size:small}';
+send_headers([$style]);
+?>
+<!DOCTYPE html><html lang="<?php echo $language; ?>"><head>
+<title><?php echo $I['titlestat']; ?></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name=viewport content="width=device-width, initial-scale=1">
+<style><?php echo $style; ?></style>
+</head><body>
+<h1><?php echo $I['titlestat']; ?></h1>
+<?php
 $time=time();
 $update_time=$time-$time%3600;
 print_langs();
 echo "<p>$I[descriptionstat]</p>";
 if($fallback){
-	echo "<p style=\"color:red;\">$I[fallback]</p>";
+	echo "<p class=\"red\" role=\"alert\">$I[fallback]</p>";
 }
 echo '<table>';
 echo "<tr><th>$I[when]</th><th>$I[count]</th><th>$I[unique]</th></tr>";
@@ -162,10 +166,10 @@ ob_start();
 imagegif($im);
 imagedestroy($im);
 echo base64_encode(ob_get_clean()).'">';
-echo '<br><p style="text-align:center;font-size:small;"><a target="_blank" href="https://github.com/DanWin/hit-counter">Hit Counter - ' . VERSION . '</a></p>';
+echo '<br><p class="software-link"><a target="_blank" href="https://github.com/DanWin/hit-counter" rel="noopener">Hit Counter - ' . VERSION . '</a></p>';
 echo '</body></html>';
 
-function fetch_numbers($id, $start, $end){
+function fetch_numbers(int $id, int $start, int $end) : array {
 	global $stmt, $stmt2, $num, $num2;
 	$stmt->execute([$id, $start, $end]);
 	$num=$stmt->fetch(PDO::FETCH_NUM);
@@ -179,4 +183,3 @@ function fetch_numbers($id, $start, $end){
 	}
 	return [number_format($num[0]), number_format($num2[0])];
 }
-?>

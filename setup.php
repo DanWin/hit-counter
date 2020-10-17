@@ -18,7 +18,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-include('counter_config.php');
+require_once('counter_config.php');
 if(!extension_loaded('pdo_mysql')){
 	die($I['pdo_mysqlextrequired']);
 }
@@ -54,4 +54,3 @@ if(!@$db->query('SELECT * FROM ' . PREFIX . 'settings LIMIT 1;')){
 }else{
 	echo "$I[statusok]\n";
 }
-?>

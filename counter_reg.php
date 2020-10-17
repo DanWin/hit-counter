@@ -18,14 +18,18 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-include_once('counter_config.php');
-header('Content-Type: text/html; charset=UTF-8');
-echo '<!DOCTYPE html><html><head>';
-echo "<title>$I[titlereg]</title>";
-echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-echo '<meta name=viewport content="width=device-width, initial-scale=1">';
-echo '</head><body>';
-echo "<h2>$I[titlereg]</h2>";
+require_once('counter_config.php');
+$style = '.green{color:green} .software-link{text-align:center;font-size:small}';
+send_headers([$style]);
+?>
+<!DOCTYPE html><html lang="<?php echo $language; ?>"><head>
+<title><?php echo $I['titlereg']; ?></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name=viewport content="width=device-width, initial-scale=1">
+<style><?php echo $style; ?></style>
+</head><body>
+<h1><?php echo $I['titlereg']; ?></h1>
+<?php
 print_langs();
 echo "<p>$I[descriptionreg]</p>";
 echo "<form action=\"$_SERVER[SCRIPT_NAME]\" method=\"POST\">";
@@ -56,7 +60,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 			$stmt->execute([$key, $_REQUEST['preload']]);
 		}
 	}
-	echo '<p style="color:green;">'.sprintf($I['regsuccess'], $key).'</p>';
+	echo '<p class="green" role="alert">'.sprintf($I['regsuccess'], $key).'</p>';
 }else{
 	$key='YOUR_API_KEY';
 }
@@ -75,8 +79,8 @@ echo "<li>$I[modmode1]</li>";
 echo "<li>$I[modmode2]</li>";
 echo "<li>$I[modmode3]</li>";
 echo "<li>$I[modmode4]</li>";
-echo '</ul></li>';
-echo '</ul>';
-echo '<br><p style="text-align:center;font-size:small;"><a target="_blank" href="https://github.com/DanWin/hit-counter">Hit Counter - ' . VERSION . '</a></p>';
-echo '</body></html>';
 ?>
+</ul></li>
+</ul>
+<br><p class="software-link"><a target="_blank" href="https://github.com/DanWin/hit-counter" rel="noopener">Hit Counter - <?php echo VERSION; ?></a></p>
+</body></html>

@@ -57,4 +57,3 @@ $T=[
 	'statusok' => 'Status: OK',
 	'nodb' => 'Keine Datenbankverbindung!',
 ];
-?>
