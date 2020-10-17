@@ -2,7 +2,7 @@
 /*
 * Hit Counter - Counter image
 *
-* Copyright (C) 2016 Daniel Winzen <d@winzen4.de>
+* Copyright (C) 2016-2020 Daniel Winzen <daniel@danwin1210.me>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
