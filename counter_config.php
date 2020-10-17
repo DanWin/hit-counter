@@ -27,7 +27,7 @@ const PREFIX=''; // Table Prefix - useful if other programs use the same names f
 const PERSISTENT=true; // Use persistent database conection true/false
 const LANG='en'; // Default language
 const BASEURL='http://tt3j2x4k5ycaa5zt.onion/'; // URL where the scripts are (e.g. http://example.com/path/)
-const VERSION='1.0'; // Script version
+const VERSION='1.1'; // Script version
 const DBVERSION=1; // Database layout version
 
 // Language selection
