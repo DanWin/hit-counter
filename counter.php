@@ -41,6 +41,7 @@ if(!$id=$stmt->fetch(PDO::FETCH_NUM)){
 header_remove('X-Frame-Options');
 header("Content-Security-Policy: base-uri 'self'; default-src 'none'; frame-ancestors '*'");
 header('Content-Type: image/gif');
+header('Access-Control-Allow-Origin: *');
 
 //add visitor to db
 if(isSet($_COOKIE["counted$_REQUEST[id]"])){

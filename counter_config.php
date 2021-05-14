@@ -76,6 +76,9 @@ function send_headers(array $styles = []){
 	header('Expires: 0');
 	header('Referrer-Policy: no-referrer');
 	header("Permissions-Policy: accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(), gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), sync-script=(), vertical-scroll=(), serial=(), trust-token-redemption=()");
+	header("Cross-Origin-Embedder-Policy: require-corp");
+	header("Cross-Origin-Opener-Policy: same-origin");
+	header("Cross-Origin-Resource-Policy: same-origin");
 	$style_hashes = '';
 	foreach($styles as $style) {
 		$style_hashes .= " 'sha256-".base64_encode(hash('sha256', $style, true))."'";
@@ -84,9 +87,6 @@ function send_headers(array $styles = []){
 	header('X-Content-Type-Options: nosniff');
 	header('X-Frame-Options: sameorigin');
 	header('X-XSS-Protection: 1; mode=block');
-	if($_SERVER['REQUEST_METHOD'] === 'HEAD'){
-		exit; // headers sent, no further processing needed
-	}
 }
 
 function set_secure_cookie(string $name, string $value){
