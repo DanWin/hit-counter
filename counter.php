@@ -42,6 +42,7 @@ header_remove('X-Frame-Options');
 header("Content-Security-Policy: base-uri 'self'; default-src 'none'; frame-ancestors '*'");
 header('Content-Type: image/gif');
 header('Access-Control-Allow-Origin: *');
+header('Cross-Origin-Resource-Policy: cross-origin');
 
 //add visitor to db
 if(isSet($_COOKIE["counted$_REQUEST[id]"])){
